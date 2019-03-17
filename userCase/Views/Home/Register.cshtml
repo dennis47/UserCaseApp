@@ -1,0 +1,86 @@
+﻿
+@model userCase.Models.User
+
+
+@{
+    ViewData["Title"] = "Kullanici Ekle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/login-register.css" rel="stylesheet" />
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".select-city").on("change", function () {
+            $list = $(".select-district");
+            $.ajax({
+                url: "/Home/getDistrict",
+                type: "GET",
+                data: { id: $(".select-city").val() },
+                traditional: true,
+                success: function (result) {
+                    $list.empty();
+                    $.each(result, function (i, item) {
+                        $list.append('<option value="' + item["districtID"] + '"> ' + item["districtName"] + ' </option>');
+                    });
+                },
+                error: function () {
+                    alert("Hatalı işlem");
+                }
+            });
+        });
+    });
+</script>
+
+<section class="login-info">
+    <div class="container">
+        <div class="row main">
+            <div class="form-header">
+                <h1 class="text-center ">Kullanıcı Ekle </h1>
+            </div>
+            <div class="main-content">
+                <form asp-action="Register" asp-controller="Home">
+                    <div class="form-group">
+                        <label asp-for="name">Ad</label>
+                        <input asp-for="name" class="form-control" placeholder="Adınız" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="surname">Soyad</label>
+                        <input asp-for="surname" class="form-control" placeholder="Soyadınız" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="email"></label>
+                        <input asp-for="email" class="form-control" placeholder="E-Posta " />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="birthdate"></label>
+                        <input asp-for="birthdate" class="form-control" placeholder="Doğum Tarihi" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="password"></label>
+                        <input asp-for="password" class="form-control" placeholder="Şifre Giriniz" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="cityID"></label>
+                        <select asp-for="cityID" class="form-control select-city" asp-items="@(new SelectList(@ViewBag.ListOfCity,"cityID","cityName"))">
+                            <option>İl seçiniz...</option>
+                        </select>
+                        @*<span asp-validation-for="cityID " class="text-danger"></span>*@
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="District.districtName"></label>
+                        <select  name="districtID" class="form-control select-district">
+                            <option>İlçe seçiniz...</option>
+                        </select>
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="Kaydet" />
+                </form>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
