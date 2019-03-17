@@ -29,15 +29,10 @@
                 <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Kullanici Yönetimi</a>
             </div>
             <div class="navbar-collapse collapse" style="float:right">
-                <ul class="nav navbar-nav">
-                    @if (@ViewData["userName"] != "")
-                    {
+                <ul class="nav navbar-nav"> 
                         <li><a asp-area="" asp-controller="Home" asp-action="Login">Giriş Yap</a></li>
                         <li><a asp-area="" asp-controller="Home" asp-action="Register">Kayıt Ol</a></li>
-                    }
-                    @if (@ViewData["userName"] != "")
-                    { }
-                        <li><a asp-area="" asp-controller="Home" asp-action="Logout"> @ViewData["userName"] Çıkış yap</a></li>
+                   
                     
                 </ul>
             </div>
