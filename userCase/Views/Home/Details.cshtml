@@ -10,10 +10,10 @@
     });
 </script>
 <div class="container">
-    <div id="login-statu">
+    <div id="login-statu" style="text-align:center">
         <h3>@ViewBag.Result</h3>
+        <h3>@ViewData["userName"]</h3>
     </div>
-    <h3>@ViewData["userName"]</h3> 
     @*<a asp-controller="account" asp-action="logout">Logout</a>*@
     <table class="table table-bordered">
         <thead>
@@ -22,9 +22,7 @@
                 <th><label asp-for="surname"></label></th>
                 <th><label asp-for="email"></label></th>
                 <th><label asp-for="birthdate"></label></th>
-                <th><label asp-for="password"></label></th>
-                <th><label asp-for="cityID"></label></th>
-                <th><label asp-for="districtID"></label></th>
+                <th><label asp-for="password"></label></th> 
                 <th>İşlemler</th>
             </tr>
         </thead>
@@ -34,9 +32,7 @@
                 <td> <label asp-for="surname">@Model.surname</label></td>
                 <td> <label asp-for="email">@Model.email</label></td>
                 <td> <label asp-for="birthdate">@Model.birthdate</label></td>
-                <td> <label asp-for="password">@Model.password</label></td>
-                <td> <label asp-for="cityID">@Model.cityID</label></td>
-                <td> <label asp-for="districtID">@Model.districtID</label></td>
+                <td> <label asp-for="password">@Model.password</label></td> 
                 <td>
                     <a asp-route-id="@Model.userID" asp-controller="Home" asp-action="Edit" class="btn btn-success">Düzenle</a>
                     <a asp-route-id="@Model.userID" asp-controller="Home" asp-action="Delete" class="btn btn-danger">Sil</a>

@@ -231,7 +231,7 @@ namespace userCase.Controllers
             if (user == null) return NotFound();
 
             if (_userRepo.Delete(user) > 0)
-                return View(user);
+                return View();
             return BadRequest();
         }
 
