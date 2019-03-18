@@ -20,19 +20,20 @@
                     @Html.ValidationSummary(false)
                     <div class="input-group ">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
-                        @Html.TextBoxFor(model => model.email, new { @class = "form-control", placeholder = "Kullanici adi" })
+
+                        <input asp-for="email" class="form-control" value="@ViewBag.email" placeholder="e-posta" />
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></span>
 
-                        <input asp-for="password" class="form-control" placeholder="Şifre Giriniz" />
+                        <input asp-for="password" class="form-control" value="@ViewBag.password" placeholder="Şifre Giriniz" />
                     </div>
                     <div class="row">
-                        <div class="col-sm-8">
-                            <input type="checkbox" class="form-check-input" />
+                        <div class="col-sm-7">
+                            <input type="checkbox"  @ViewBag.rememberMe asp-for="rememberMe" class="form-check-input" />
                             <label class="form-check-label"> Beni Hatırla</label>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-5">
                             <a asp-area="" asp-controller="Home" asp-action="ResreshPassword">Şifre mi unutum!</a>
                         </div>
                     </div>

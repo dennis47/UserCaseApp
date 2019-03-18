@@ -26,6 +26,18 @@ namespace userCase.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            CookieOptions cookie = new CookieOptions(); 
+            if (Convert.ToBoolean(Request.Cookies["rememberMe"]))
+            {
+                ViewBag.email = Request.Cookies["email"];
+                ViewBag.password = Request.Cookies["password"];
+                ViewBag.rememberMe = "checked";
+            }
+            else
+            {
+                ViewBag.rememberMe = "";
+                cookie.Expires = DateTime.Now.AddDays(-1);
+            }
             return View();            
            // return Ok(_userRepo.List());            
         }
@@ -42,6 +54,23 @@ namespace userCase.Controllers
                 }
                 else
                 {  
+                    CookieOptions cookie = new CookieOptions();
+                    cookie.Expires = DateTime.Now.AddDays(1);
+                    if (model.rememberMe)
+                    {
+                       Response.Cookies.Append("email",model.email); 
+                       Response.Cookies.Append("password",model.password); 
+                       Response.Cookies.Append("rememberMe", model.rememberMe.ToString()); 
+                    }
+                    else
+                    {
+                        Response.Cookies.Append("email", model.email);
+                        Response.Cookies.Append("password", model.password);
+                    }
+                    var x = Request.Cookies["email"];
+                    var y = Request.Cookies["password"];
+                    var z = Request.Cookies["rememberMe"];
+
                     //ViewData["result"] = HttpContext.Session.Get(result.ToString());
                      HttpContext.Session.SetString("userName", result.name.ToString()); 
                      ViewData["userName"] = HttpContext.Session.GetString("userName");   
@@ -53,23 +82,27 @@ namespace userCase.Controllers
             {
                 return View(model);
             }
-        } 
-      /*
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogOut()
-        {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation(4, "User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
-       
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Remove("userId");
-            return RedirectToAction("Index");
-        }
-        */
+        /*
+          [HttpPost]
+          [ValidateAntiForgeryToken]
+          public async Task<IActionResult> LogOut()
+          {
+              await _signInManager.SignOutAsync();
+              _logger.LogInformation(4, "User logged out.");
+              return RedirectToAction(nameof(HomeController.Index), "Home");
+               foreach (var cookieKey in Request.Cookies.Keys)
+                  {
+                      Response.Cookies.Delete(cookieKey);
+                  }
+          }
+
+          public IActionResult Logout()
+          {
+              HttpContext.Session.Remove("userId");
+              return RedirectToAction("Index");
+          }
+          */
 
         public IActionResult Index()
         {
@@ -77,68 +110,42 @@ namespace userCase.Controllers
         }
         [HttpGet]
         public IActionResult Register()
-        {  
-            var result = from a in _cityRepo.ListQueryable()
-                         where a.cityID > 0
-                         select new { a.cityID, a.cityName };
-
-            List<City> list = result.AsEnumerable()
-                                      .Select(o => new City
-                                      {
-                                          cityName = o.cityName,
-                                          cityID = o.cityID
-                                      }).ToList();     
+        { 
+            List<City> list = _cityRepo.List();
             ViewBag.ListOfCity = list; 
             return View();
              
         }
 
         public IActionResult getDistrict(int id)
-        {
-            var result = from a in _districtRepo.ListQueryable()
-                        where a.cityID==id
-                        select new { a.districtID, a.districtName };
-
-            List<District> list = result.AsEnumerable()
-                                    .Select(o => new District
-                                    {
-                                        districtName = o.districtName,
-                                        districtID = o.districtID
-                                    }).ToList();   
-                        
+        { 
+            List<District> list = _districtRepo.List(x=>x.cityID==id); 
             return Json(list);
         }
         //INSERT
         [HttpPost]
         public IActionResult Register(User model)
         { 
-            if (!ModelState.IsValid || model == null) return BadRequest();
+            if (!ModelState.IsValid || model == null) return BadRequest();         
+                
+            List<User> allUserList = _userRepo.List();
+            foreach (var u in allUserList)
+            {
+                if (u.email == model.email)
+                {
+                    ModelState.AddModelError("", "Kullanici mail adresi kayıtlı!");
+                    return View(model);
+                } 
+            }
+
             if (_userRepo.Insert(model) > 0)
             {
-                var allUser = from a in _userRepo.ListQueryable()
-                              select new { a.email };
-
-                List<User> allUserList = allUser.AsEnumerable()
-                                        .Select(o => new User
-                                        {
-                                            email = o.email
-                                        }).ToList();
-                foreach (var u in allUserList)
-                {
-                    if (u.email == model.email)
-                    {
-                        ModelState.AddModelError("", "Kullanici mail adresi kayıtlı!");
-                        return View(model);
-                    }
-                }
                 ViewBag.Result = "Kayıt işlemi Başarıyla Yapılmıştır.";
                 HttpContext.Session.SetString("Username",model.name+ " " +model.surname);
                 ViewData["userNameSurname"] = HttpContext.Session.GetString("Username"); 
                 return RedirectToAction("Login", "Home", new { id = model.userID });
             }
             return BadRequest();
-
-
         }
 
         //Edit
@@ -154,29 +161,31 @@ namespace userCase.Controllers
             {
                 return BadRequest();
             }
-            var result = from a in _cityRepo.ListQueryable()
-                         where a.cityID > 0
-                         select new { a.cityID, a.cityName };
+            //var result = from a in _cityRepo.ListQueryable()
+            //             where a.cityID > 0
+            //             select new { a.cityID, a.cityName };
 
-            List<City> list = result.AsEnumerable()
-                                      .Select(o => new City
-                                      {
-                                          cityName = o.cityName,
-                                          cityID = o.cityID
-                                      }).ToList();
+            //List<City> list = result.AsEnumerable()
+            //                          .Select(o => new City
+            //                          {
+            //                              cityName = o.cityName,
+            //                              cityID = o.cityID
+            //                          }).ToList();
 
 
-            var resultd = from a in _districtRepo.ListQueryable()
-                          select new { a.districtID, a.districtName };
+            //var resultd = from a in _districtRepo.ListQueryable()
+            //              select new { a.districtID, a.districtName };
 
-            List<District> listd = resultd.AsEnumerable()
-                                      .Select(o => new District
-                                      {
-                                          districtName = o.districtName,
-                                          districtID = o.districtID
-                                      }).ToList();
+            //List<District> listd = resultd.AsEnumerable()
+            //                          .Select(o => new District
+            //                          {
+            //                              districtName = o.districtName,
+            //                              districtID = o.districtID
+            //                          }).ToList();
 
-            ViewBag.ListOfCity = list;  
+            List<City> listc= _cityRepo.List();
+            List<District> listd = _districtRepo.List();
+            ViewBag.ListOfCity = listc;
             ViewBag.ListOfDistrict = listd;  
             return View(user);
         }
@@ -196,14 +205,8 @@ namespace userCase.Controllers
 
             var oldUser = _userRepo.Find(x => x.userID == id.Value);
             if (oldUser == null) return NotFound();
-            var allUser =  from a in _userRepo.ListQueryable() 
-                             select new { a.email};
 
-            List<User> allUserList = allUser.AsEnumerable()
-                                    .Select(o => new User
-                                    {
-                                        email = o.email
-                                    }).ToList(); 
+            List<User> allUserList = _userRepo.List();
             foreach (var u in allUserList)
             {
                 if (u.email == model.email)
@@ -219,7 +222,6 @@ namespace userCase.Controllers
             if (_userRepo.Update(model) > 0)
                 return View(model);
             return BadRequest();
-
         }
         // DELETE  
         //[HttpDelete("{id}")]

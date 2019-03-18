@@ -15,5 +15,7 @@ namespace userCase.Models
         [DisplayName("Şifre"), Required(ErrorMessage = "{0} alanı boş geçilemez"), DataType(DataType.Password), StringLength(50, ErrorMessage =
            "{0} max. {1}  karater olmalı")]
         public string password { get; set; }
+        [DisplayName("")]
+        public bool rememberMe { get; set; }
     }
 }

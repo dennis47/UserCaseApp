@@ -39,7 +39,13 @@ namespace userCase
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
                // options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            });  
+            });
+
+            // SESSION section
+            services.AddMemoryCache();
+            //services.AddDistributedMemoryCache();
+            services.AddSession();
+
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));            
             services.AddMvc();             
         }
@@ -60,7 +66,7 @@ namespace userCase
              
             app.UseStaticFiles();
             app.UseStatusCodePages();
-            //app.UseAuthentication();
+            app.UseAuthentication();
             //app.UseCookiePolicy();
             app.UseSession();
 
